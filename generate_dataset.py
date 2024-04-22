@@ -10,10 +10,10 @@ def random_stuff(n):
     array = []
 
     for _ in range(n):
-        ''' delta = datetime.date.today() - old_date
+        delta = datetime.date.today() - old_date
         random_days = random.randint(0, delta.days)
-        date =  old_date + datetime.timedelta(days=random_days) '''
-        array.append([random.randint(num[0], num[1]) for num in arr])
+        date =  old_date + datetime.timedelta(days=random_days)
+        array.append([random.randint(num[0], num[1]) for num in arr] + [date])
     
     return array
 
