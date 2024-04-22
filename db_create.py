@@ -24,10 +24,11 @@ def insert_data(collection, data):
     if data:
         collection.insert_many(data)
 
-def main():
+
+
+def getPokemon():
     db = get_database()
     pokemon_collection = db['pokemons']
-    
     limit = 10
     next_url = f'https://pokeapi.co/api/v2/pokemon?limit={limit}'
     data_store = []
@@ -57,6 +58,49 @@ def main():
             data_store = []  # Clear the list after inserting to database
 
         time.sleep(1)  # Throttle API requests to avoid rate limits
+
+def getmoves():
+    db = get_database()
+    pokemon_collection = db['moves']
+    data_store = []
+    limit = 1
+    
+    while limit:    
+        data = fetch_pokemon_data(f'https://pokeapi.co/api/v2/move/{limit}/', ['name', 'type','power','pp','accuracy'])
+        if not data:
+            break  # Exit the loop if no data is fetched
+
+        data.update({'move_id':limit})
+        limit += 1  # Update the next URL
+        data_store.append(data)
+        print(data_store)
+
+        if data_store:
+                insert_data(pokemon_collection, data_store)
+                data_store = []  # Clear the list after inserting to database
+
+        time.sleep(1)  # Throttle API requests to avoid rate limits
+
+
+
+
+    
+def gettypes():
+    pass
+    pokemon_collection = db['types']
+    db = get_database()
+    
+def getlocations():
+    pass
+    db = get_database()
+    pokemon_collection = db['locations']
+
+
+def main():
+    #getPokemon()
+    getmoves()
+    #gettypes()
+    #getlocations()
 
 if __name__ == "__main__":
     main()
