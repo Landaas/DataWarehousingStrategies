@@ -3,7 +3,7 @@ import random
 from ranges import ranges
 
 old_date = datetime.date(2010, 1, 1)
-arr = [[1, ranges[0]], [1, ranges[1]], [1, ranges[2]], [1, ranges[3]], [15, 600]]
+arr = [[1, ranges[0]], [1, ranges[1]], [1, ranges[2]], [15, 600]]
 entries = 100
 
 def random_stuff(n):
