@@ -46,7 +46,7 @@ def getPokemon():
             info = fetch_pokemon_data(pokemon['url'], ['id', 'moves', 'stats', 'types'])
             if info:
                 pokemon.update({
-                    'id': info['id'],
+                    'pokemon_id': info['id'],
                     'types': info['types'],
                     'moves': [move for move in info['moves'] if move.get('version_group_details')],
                     **{f"base_{stat['stat']['name']}": stat['base_stat'] for stat in info['stats'] if stat['stat']['name'] in ['hp', 'attack', 'defense', 'speed']}
@@ -86,21 +86,55 @@ def getmoves():
 
     
 def gettypes():
-    pass
-    pokemon_collection = db['types']
     db = get_database()
+    pokemon_collection = db['types']
+    data_store = []
+    limit = 1
+    
+    while limit:    
+        data = fetch_pokemon_data(f'https://pokeapi.co/api/v2/type/{limit}/', ['name'])
+        if not data:
+            break  # Exit the loop if no data is fetched
+
+        data.update({'type_id':limit})
+        limit += 1  # Update the next URL
+        data_store.append(data)
+        print(data_store)
+
+        if data_store:
+                insert_data(pokemon_collection, data_store)
+                data_store = []  # Clear the list after inserting to database
+
+        time.sleep(1)  # Throttle API requests to avoid rate limits
     
 def getlocations():
-    pass
     db = get_database()
     pokemon_collection = db['locations']
+    data_store = []
+    limit = 1
+    
+    while limit:    
+        data = fetch_pokemon_data(f'https://pokeapi.co/api/v2/location/{limit}/', ['name'])
+        if not data:
+            break  # Exit the loop if no data is fetched
+
+        data.update({'location_id':limit})
+        limit += 1  # Update the next URL
+        data_store.append(data)
+        print(data_store)
+
+        if data_store:
+                insert_data(pokemon_collection, data_store)
+                data_store = []  # Clear the list after inserting to database
+
+        time.sleep(1)  # Throttle API requests to avoid rate limits
 
 
 def main():
-    #getPokemon()
+    getPokemon()
     getmoves()
-    #gettypes()
-    #getlocations()
+    gettypes()
+    getlocations()
 
 if __name__ == "__main__":
     main()
