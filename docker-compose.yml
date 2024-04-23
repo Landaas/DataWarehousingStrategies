@@ -12,7 +12,7 @@ services:
     volumes:
       - mongodb_data:/data/db
     
-  postgres-dw:
+  postgres:
     image: postgres
     restart: always
     shm_size: 128mb
