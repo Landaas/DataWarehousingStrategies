@@ -1,6 +1,7 @@
 from pymongo import MongoClient
 import requests
 import time
+import csv
 
 def get_database():
     """Establish a connection to the MongoDB database."""
@@ -130,11 +131,38 @@ def getlocations():
         time.sleep(1)  # Throttle API requests to avoid rate limits
 
 
+
+def read_csv_to_dict_list(file_path):
+    # Define the keys for the dictionary
+    keys = ['Location', 'winner pokemon', 'losing pokemon', 'Winning move', 'Duration','Losing move', 'date']
+    data_list = []
+    
+    # Open the CSV file and read each line into a dictionary using the predefined keys
+    with open(file_path, newline='') as csvfile:
+        reader = csv.reader(csvfile)
+        for row in reader:
+            # Make sure the row has exactly the number of elements expected (6 in this case)
+            if len(row) == len(keys):
+                data_dict = dict(zip(keys, row))
+                data_list.append(data_dict)
+            else:
+                print("Error: Row does not match expected format")
+    
+    return data_list
+
+def getBattles():
+    db = get_database()
+    pokemon_collection = db['Battles']
+    data = read_csv_to_dict_list('dataset.csv')
+    insert_data(pokemon_collection, data)
+
+
 def main():
     getPokemon()
     getmoves()
     gettypes()
     getlocations()
+    getBattles()
 
 if __name__ == "__main__":
     main()
