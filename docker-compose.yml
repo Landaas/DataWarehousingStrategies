@@ -11,6 +11,22 @@ services:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
+    
+  postgres-dw:
+    image: postgres
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+    ports:
+      - 5432:5432
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8084:8080
 
   python-app:
     build: .
