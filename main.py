@@ -27,10 +27,9 @@ postgres_conn = psycopg2.connect(
 
 
 # Neo4j connection
-neo4j_driver = GraphDatabase.driver(
-    'bolt://localhost:7687',
-    auth=('neo4j', 'password')
-)
+neo4j_auth = os.getenv('NEO4J_AUTH', 'neo4j/password')
+username, password = neo4j_auth.split('/')
+neo4j_driver = GraphDatabase.driver('bolt://neo4j:7687', auth=(username, password))
 
 
 

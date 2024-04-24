@@ -152,7 +152,7 @@ def read_csv_to_dict_list(file_path):
 
 def getBattles():
     db = get_database()
-    pokemon_collection = db['Battles']
+    pokemon_collection = db['battles']
     data = read_csv_to_dict_list('dataset.csv')
     insert_data(pokemon_collection, data)
 
