@@ -1,0 +1,4 @@
+flask
+pymongo
+psycopg2-binary
+neo4j
