@@ -92,7 +92,7 @@ def create_tables(conn):
         print("Error creating table:", e)
 
 # Main function
-def main():
+def createPostgres():
     # PostgreSQL server details
     user = "admin"
     password = "password"
@@ -117,4 +117,4 @@ def main():
     conn.close()
 
 if __name__ == "__main__":
-    main()
+    createPostgres()

@@ -55,9 +55,10 @@ def getPokemon(conn):
 
 def getBattles(conn):
     cur = conn.cursor()
+    cur.execute("SET datestyle = ymd")
     with open("dataset.csv", 'r') as f:
         for line in f.readlines():
-            data = line[:-1]
+            data = line.split('\n')[0]
             values = data.split(',')
             cur.execute("""
                 INSERT INTO battles (lid, winner_pid, loser_pid, winning_mid, losing_mid, bduration, bdate) 
@@ -90,7 +91,7 @@ def getlocations(conn):
     data = fetch_pokemon_data(f'https://pokeapi.co/api/v2/location?limit={ranges[0]}')
     
     for i, loc in enumerate(data['results']):   
-        location = (
+        location = (    
             i,
             loc['name']
             )
