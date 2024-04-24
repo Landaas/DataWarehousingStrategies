@@ -2,3 +2,4 @@ __pycache__
 csv
 dataset.csv
 node_modules/
+neo4j
