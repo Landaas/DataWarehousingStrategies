@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from pymongo import MongoClient
 import psycopg2
 from neo4j import GraphDatabase
@@ -15,14 +15,12 @@ mongo_uri = os.getenv('MONGO_URI', 'mongodb://admin:password@localhost:27017/')
 mongo_client = MongoClient(mongo_uri)
 mongo_db = mongo_client['pokeapi_datawarehouse']
 
-"""# PostgreSQL connection
+# PostgreSQL connection
 postgres_conn = psycopg2.connect(
-    host='localhost',
-    port=5432,
-    database='pokedw',
     user='admin',
-    password='password'
-)"""
+    password='password',
+    database='pokedw'
+)
 
 
 
@@ -42,15 +40,30 @@ def get_spes_data_from_mongodb(collection_name):
     print(collection)
     data = collection.find()
     return jsonify(dumps(data))
+
+@app.route('/mongodb', methods=['POST'])
+def query_mongodb():
+    content = request.json
+    print(content)
+    name = content["collection"].capitalize()
+    collection = mongo_db[name]
+    print(collection)
+    data = collection.find()
+    return jsonify(dumps(data))
     
 
-"""@app.route('/postgresql', methods=['GET'])
-def get_data_from_postgresql():
-    cursor = postgres_conn.cursor()
-    cursor.execute('SELECT * FROM your_postgresql_table')
-    data = cursor.fetchall()
-    cursor.close()
-    return jsonify(data)"""
+@app.route('/postgresql', methods=['POST'])
+def query_postgres():
+    content = request.json
+    if content:
+        cursor = postgres_conn.cursor()
+        cursor.execute(content)
+        data = cursor.fetchall()
+        colnames = [desc[0] for desc in cursor.description]
+        cursor.close()
+        return jsonify({"headers": colnames, "results": data})
+    else:
+        return 'bad request!', 400
 
 @app.route('/neo4j', methods=['GET'])
 def get_data_from_neo4j():

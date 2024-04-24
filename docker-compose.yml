@@ -47,20 +47,6 @@ services:
     restart: on-failure
     depends_on:
       - mongo
-    volumes:
-      - .:/usr/src/app
-  
-  neo4j:
-    image: neo4j
-    ports: 
-    - 7474:7474 
-    - 7687:7687 
-    environment:
-      NEO4J_AUTH: neo4j/password
-    volumes:
-      - ./neo4j:/data
-    
-  
 
   neo4j:
     image: neo4j

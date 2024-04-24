@@ -2,6 +2,7 @@ from pymongo import MongoClient
 import requests
 import time
 import csv
+from ranges import ranges
 
 def get_database():
     """Establish a connection to the MongoDB database."""
@@ -29,12 +30,13 @@ def insert_data(collection, data):
 
 def getPokemon():
     db = get_database()
+    print(db)
     pokemon_collection = db['pokemons']
-    limit = 10
-    next_url = f'https://pokeapi.co/api/v2/pokemon?limit={limit}'
+    limit = 0
+    next_url = f'https://pokeapi.co/api/v2/pokemon?limit={1}'
     data_store = []
 
-    while next_url:    
+    while limit < ranges[1]:    
         data = fetch_pokemon_data(next_url, ['next', 'results'])
         if not data:
             break  # Exit the loop if no data is fetched
@@ -58,7 +60,7 @@ def getPokemon():
             insert_data(pokemon_collection, data_store)
             data_store = []  # Clear the list after inserting to database
 
-        time.sleep(1)  # Throttle API requests to avoid rate limits
+        limit += 1
 
 def getmoves():
     db = get_database()
@@ -66,7 +68,7 @@ def getmoves():
     data_store = []
     limit = 1
     
-    while limit:    
+    while limit < ranges[3] + 1:    
         data = fetch_pokemon_data(f'https://pokeapi.co/api/v2/move/{limit}/', ['name', 'type','power','pp','accuracy'])
         if not data:
             break  # Exit the loop if no data is fetched
@@ -92,7 +94,7 @@ def gettypes():
     data_store = []
     limit = 1
     
-    while limit:    
+    while limit < 10:    
         data = fetch_pokemon_data(f'https://pokeapi.co/api/v2/type/{limit}/', ['name'])
         if not data:
             break  # Exit the loop if no data is fetched
@@ -114,7 +116,7 @@ def getlocations():
     data_store = []
     limit = 1
     
-    while limit:    
+    while limit < ranges[0]:    
         data = fetch_pokemon_data(f'https://pokeapi.co/api/v2/location/{limit}/', ['name'])
         if not data:
             break  # Exit the loop if no data is fetched
@@ -157,7 +159,7 @@ def getBattles():
     insert_data(pokemon_collection, data)
 
 
-def main():
+def create_mongodb():
     getPokemon()
     getmoves()
     gettypes()
@@ -165,4 +167,4 @@ def main():
     getBattles()
 
 if __name__ == "__main__":
-    main()
+    create_mongodb()
