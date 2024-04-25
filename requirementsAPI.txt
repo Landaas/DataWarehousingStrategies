@@ -1,4 +1,4 @@
 flask
 pymongo
-psycopg2-binary
+psycopg2==2.9.9
 neo4j

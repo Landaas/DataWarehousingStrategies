@@ -9,36 +9,53 @@ import {
   Button,
   Grid,
 } from "@mui/material"
+import JSONPretty from 'react-json-pretty';
+var JSONPrettyMon = require('react-json-pretty/dist/acai');
+
 
 
 export default function Mongodb() {
-    const [value, setValue] = React.useState("")
-    const [table, setTable] = React.useState([])
-    const [headers, setHeaders] = React.useState([]) 
+    const [collection, setCollection] = React.useState("")
+    const [query, setQuery] = React.useState("")
+    const [data, setData] = React.useState()
   
-    const getData = async (str) => {
-      const result = await axios.post("/api/mongodb", str, {headers: {"Content-Type": "application/json"}})
-      if (result.status === 200) {
-        setHeaders(result.data.headers)
-        setTable(result.data.results)
-      }
+    const getData = async () => {
+        if (collection.length) {
+            await axios.post("/api/mongodb", JSON.stringify({collection: collection, query: query.length ? query : null}), {headers: {"Content-Type": "application/json"}}).then(res => {
+                if (res.status === 200) {
+                    setData(res.data)
+                }
+            }).catch(err => {
+                setData(err.message)
+            })
+        }
     }
     return (
         <Stack spacing={2} display={"flex"} >
           <Grid container flexDirection={"column"} alignItems={"flex-end"} justifyContent={"center"}>
             <Grid container component={Paper} mb={2} width={800}>
-              < TextField value={value} onChange={(e) => {e.preventDefault; setValue(e.target.value)}} multiline variant="outlined" fullWidth/>
+                <Stack direction={"row"} display={"flex"} width={"100%"}>
+                    <TextField label="Collection" value={collection} onChange={(e) => {e.preventDefault; setCollection(e.target.value)}} multiline variant="outlined" fullWidth/>
+                    <TextField label="Query" value={query} onChange={(e) => {e.preventDefault; setQuery(e.target.value)}} multiline variant="outlined" fullWidth></TextField>
+                </Stack>
             </Grid>
             <Grid item display={"flex"} justifyContent={"flex-end"}>
               <Grid item>
-                <Button onClick={() => getData(value)} variant="contained">
+                <Button onClick={() => getData()} variant="contained">
                   Submit
                 </Button>
               </Grid>
             </Grid>
           </Grid>
-        <Paper>
-        </Paper>
-      </Stack>
+          {
+            data && (
+                <Paper>
+                    <JSONPretty data={data} theme={JSONPrettyMon}>
+    
+                    </JSONPretty>
+                </Paper>
+            )
+          }
+        </Stack>
     )
 }

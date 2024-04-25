@@ -22,18 +22,16 @@ postgres_conn = psycopg2.connect(
     database='pokedw'
 )
 
-
-
 # Neo4j connection
 neo4j_auth = os.getenv('NEO4J_AUTH', 'neo4j/password')
 username, password = neo4j_auth.split('/')
-neo4j_driver = GraphDatabase.driver('bolt://neo4j:7687', auth=(username, password))
+neo4j_driver = GraphDatabase.driver('bolt://localhost:7687', auth=(username, password))
 
 
 
 @app.route('/mongodb/<collection_name>', methods=['GET'])
 def get_spes_data_from_mongodb(collection_name):
-    name = collection_name.capitalize()
+    name = collection_name
     print(name)
     collection = mongo_db[name]
     print(collection)
@@ -44,10 +42,11 @@ def get_spes_data_from_mongodb(collection_name):
 def query_mongodb():
     content = request.json
     print(content)
-    name = content["collection"].capitalize()
+    name = content["collection"]
+    print(name)
     collection = mongo_db[name]
-    print(collection)
-    data = collection.find()
+    print(content["query"])
+    data = collection.find({"move_id": "1"}) if "query" in content and content["query"] else collection.find()
     return jsonify(dumps(data))
     
 
