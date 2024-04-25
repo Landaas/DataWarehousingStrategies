@@ -1,29 +1,11 @@
+import time
 import psycopg2
 from psycopg2 import sql
 
 # Function to connect to PostgreSQL server
 def connect_to_postgres(host, user, password, dbname):
-    try:
-        conn = psycopg2.connect(
-            host=host,
-            user=user,
-            password=password,
-            dbname="postgres"
-        )
-        conn.autocommit = True
-        print("Connected to PostgreSQL server")
-        cur = conn.cursor()
-        cur.execute("DROP DATABASE " + dbname + " WITH (force)")
-        cur.execute("CREATE DATABASE " + dbname)
-        conn = psycopg2.connect(
-            host=host,
-            user=user,
-            password=password,
-            dbname=dbname
-        )
-        return conn
-    except psycopg2.Error as err:
-        print(err)
+    count = 0
+    while True:
         try:
             conn = psycopg2.connect(
                 host=host,
@@ -32,18 +14,36 @@ def connect_to_postgres(host, user, password, dbname):
                 dbname="postgres"
             )
             conn.autocommit = True
-            cur = conn.cursor()
-            cur.execute("CREATE DATABASE " + dbname)
-            conn = psycopg2.connect(
-                host=host,
-                user=user,
-                password=password,
-                dbname=dbname
-            )
-            return conn
+            print("postgres: Connected to PostgreSQL server")
+            try:
+                cur = conn.cursor()
+                cur.execute("DROP DATABASE " + dbname + " WITH (force)")
+                cur.execute("CREATE DATABASE " + dbname)
+                conn = psycopg2.connect(
+                    host=host,
+                    user=user,
+                    password=password,
+                    dbname=dbname
+                )
+                return conn
+            except:
+                cur = conn.cursor()
+                cur.execute("CREATE DATABASE " + dbname)
+                conn = psycopg2.connect(
+                    host=host,
+                    user=user,
+                    password=password,
+                    dbname=dbname
+                )
+                return conn
         except psycopg2.Error as e: 
-            print("Error connecting to PostgreSQL server:", e)
-            return None
+                if count < 2:
+                    print("postgres: Error connecting to PostgreSQL server:", e)
+                    time.sleep(5)
+                    print("postgres: Trying connection again:")
+                else:
+                    print("postgres: Error connecting to PostgreSQL server:", e)
+                    return None
 
 # Function to create a new table
 def create_tables(conn):
@@ -90,10 +90,10 @@ def create_tables(conn):
                 lname VARCHAR(150)
             )
         """)
-        print("Tables created successfully")
+        print("postgres: Tables created successfully")
         cur.close()
     except psycopg2.Error as e:
-        print("Error creating table:", e)
+        print("postgres: Error creating table:", e)
 
 # Main function
 def createPostgres():

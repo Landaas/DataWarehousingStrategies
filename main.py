@@ -15,13 +15,20 @@ mongo_uri = os.getenv('MONGO_URI', 'mongodb://admin:password@localhost:27017/')
 mongo_client = MongoClient(mongo_uri)
 mongo_db = mongo_client['pokeapi_datawarehouse']
 
+def connectPostgres():
+    try: 
+        postgres_conn = psycopg2.connect(
+            host="host.docker.internal",
+            user='admin',
+            password='password',
+            dbname='pokedw'
+        )
+        return postgres_conn
+    except psycopg2.Error as e: 
+        print("Error connecting to PostgreSQL server:", e)
+        return None
+    
 # PostgreSQL connection
-postgres_conn = psycopg2.connect(
-    host="host.docker.internal",
-    user='admin',
-    password='password',
-    dbname='pokedw'
-)
 
 # Neo4j connection
 neo4j_auth = os.getenv('NEO4J_AUTH', 'neo4j/password')
@@ -54,6 +61,8 @@ def query_mongodb():
 @app.route('/postgresql', methods=['POST'])
 def query_postgres():
     content = request.json
+    postgres_conn = connectPostgres()
+    if not postgres_conn: return 'Unable to connect to Postgres Server!', 500
     if content:
         cursor = postgres_conn.cursor()
         cursor.execute(content)

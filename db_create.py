@@ -6,7 +6,7 @@ from ranges import ranges
 
 def get_database():
     """Establish a connection to the MongoDB database."""
-    CONNECTION_STRING = "mongodb://admin:password@mongo:27017/"
+    CONNECTION_STRING = "mongodb://admin:password@host.docker.internal:27017/"
     client = MongoClient(CONNECTION_STRING)
     return client['pokeapi_datawarehouse']
 
@@ -30,7 +30,6 @@ def insert_data(collection, data):
 
 def getPokemon():
     db = get_database()
-    print(db)
     pokemon_collection = db['pokemons']
     limit = 0
     next_url = f'https://pokeapi.co/api/v2/pokemon?limit={1}'
@@ -45,7 +44,6 @@ def getPokemon():
         next_url = data['next']  # Update the next URL
 
         for pokemon in pokemon_entries:
-            print(pokemon['name'])
             info = fetch_pokemon_data(pokemon['url'], ['id', 'stats', 'types'])
             if info:
                 pokemon.update({
@@ -60,6 +58,7 @@ def getPokemon():
             data_store = []  # Clear the list after inserting to database
 
         limit += 1
+    print("mongodb: Added pokemon")
 
 def getmoves():
     db = get_database()
@@ -75,13 +74,10 @@ def getmoves():
         data.update({'move_id':limit})
         limit += 1  # Update the next URL
         data_store.append(data)
-        print(data_store)
 
         if data_store:
                 insert_data(pokemon_collection, data_store)
                 data_store = []  # Clear the list after inserting to database
-
-        time.sleep(1)  # Throttle API requests to avoid rate limits
 
 
 
@@ -101,13 +97,11 @@ def gettypes():
         data.update({'type_id':limit})
         limit += 1  # Update the next URL
         data_store.append(data)
-        print(data_store)
 
         if data_store:
                 insert_data(pokemon_collection, data_store)
                 data_store = []  # Clear the list after inserting to database
-
-        time.sleep(1)  # Throttle API requests to avoid rate limits
+    print("mongodb: Added types")
     
 def getlocations():
     db = get_database()
@@ -123,13 +117,11 @@ def getlocations():
         data.update({'location_id':limit})
         limit += 1  # Update the next URL
         data_store.append(data)
-        print(data_store)
 
         if data_store:
                 insert_data(pokemon_collection, data_store)
                 data_store = []  # Clear the list after inserting to database
-
-        time.sleep(1)  # Throttle API requests to avoid rate limits
+    print("mongodb: Added locations")
 
 
 
@@ -147,7 +139,7 @@ def read_csv_to_dict_list(file_path):
                 data_dict = dict(zip(keys, row))
                 data_list.append(data_dict)
             else:
-                print("Error: Row does not match expected format")
+                print("mongodb: Error: Row does not match expected format")
     
     return data_list
 
@@ -156,6 +148,7 @@ def getBattles():
     pokemon_collection = db['battles']
     data = read_csv_to_dict_list('dataset.csv')
     insert_data(pokemon_collection, data)
+    print("mongodb: Added Battles")
 
 
 def create_mongodb():

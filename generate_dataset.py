@@ -18,6 +18,12 @@ def random_stuff(n):
     
     return array
 
-with open("dataset.csv", "w") as f:
-    f.writelines('\n'.join([str(','.join([str(i) for i in arr])) 
-    for arr in random_stuff(entries)]))
+def generateDataset():
+    with open("dataset.csv", "w") as f:
+        f.writelines('\n'.join([str(','.join([str(i) for i in arr])) 
+        for arr in random_stuff(entries)]))
+
+
+if __name__ == '__main__':
+    generateDataset()
+    

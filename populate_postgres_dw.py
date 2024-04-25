@@ -13,10 +13,10 @@ def connect_to_postgres(host, user, password, dbname):
             password=password,
             dbname=dbname
         )
-        print("Connected to PostgreSQL server")
+        print("postgres: Connected to PostgreSQL server")
         return conn
     except psycopg2.Error as e:
-        print("Error connecting to PostgreSQL server:", e)
+        print("postgres: Error connecting to PostgreSQL server:", e)
         return None
 
 def fetch_pokemon_data(url):
@@ -52,7 +52,7 @@ def getPokemon(conn):
                     INSERT INTO pokemon (pid, pname, ptype_primary, ptype_secondary, pbase_hp, pbase_attack, pbase_defence, pbase_speed) 
                     VALUES (%s,'%s','%s','%s',%s,%s,%s,%s);
                     """ % pokemon)
-    print("Added pokemon")
+    print("postgres: Added pokemon")
 
 def getBattles(conn):
     cur = conn.cursor()
@@ -65,7 +65,7 @@ def getBattles(conn):
                 INSERT INTO battles (lid, winner_pid, loser_pid, winning_mid, losing_mid, bduration, bdate) 
                 VALUES (%s,%s,%s,%s,%s,%s,'%s');
                 """ % tuple(values))
-    print("Added all battles")
+    print("postgres: Added all battles")
 
 def getmoves(conn):
     cur = conn.cursor()
@@ -85,7 +85,7 @@ def getmoves(conn):
                     INSERT INTO moves (mid, mname, mtype, mpower, mpp, maccuracy) 
                     VALUES (%s,'%s','%s',%s,%s,%s);
                     """ % move)
-    print("Added moves")
+    print("postgres: Added moves")
     
 def getlocations(conn):
     cur = conn.cursor()
@@ -100,7 +100,7 @@ def getlocations(conn):
                     INSERT INTO locations (lid, lname) 
                     VALUES (%s,'%s');
                     """ % location)
-    print("Added locations")
+    print("postgres: Added locations")
 
 
 def loadPostgres():

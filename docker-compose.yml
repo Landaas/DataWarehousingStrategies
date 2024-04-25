@@ -9,8 +9,6 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: password
     ports:
       - "27017:27017"
-    volumes:
-      - ./mongodb_data:/data/db 
 
   mongo-express:
     image: mongo-express
@@ -42,11 +40,6 @@ services:
     ports:
       - 8084:8080
 
-  python-app:
-    build: .
-    depends_on:
-      - mongo
-
   neo4j:
     image: neo4j
     ports:
@@ -56,6 +49,14 @@ services:
       - ./neo4j:/data
     environment:
       NEO4J_AUTH: neo4j/password
+
+  python-app:
+    build: .
+    restart: on-failure
+    depends_on:
+      - mongo
+      - postgres
+      - neo4j
 
   flask-api:
     build:
@@ -67,6 +68,7 @@ services:
       - mongo
       - postgres
       - neo4j
+      - python-app
     environment:
       - MONGO_URI=mongodb://admin:password@mongo:27017/
       - NEO4J_AUTH=neo4j/password
