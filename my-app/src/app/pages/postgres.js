@@ -28,6 +28,9 @@ export default function Postgres() {
     }
     return ( 
       <Stack spacing={2} display={"flex"} >
+        <Button href='http://localhost:8084/'>
+          WebUI
+        </Button>
         <Grid container flexDirection={"column"} alignItems={"flex-end"} justifyContent={"center"}>
           <Grid container component={Paper} mb={2} width={800}>
             < TextField value={value} onChange={(e) => {e.preventDefault; setValue(e.target.value)}} multiline variant="outlined" fullWidth/>

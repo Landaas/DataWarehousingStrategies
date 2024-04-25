@@ -3,6 +3,8 @@ from pymongo import MongoClient
 import psycopg2
 from neo4j import GraphDatabase
 from bson.json_util import dumps, loads
+from py2neo import Graph
+
 
 import os
 from pymongo import MongoClient
@@ -11,7 +13,7 @@ from pymongo import MongoClient
 app = Flask(__name__)
 
 # MongoDB connection
-mongo_uri = os.getenv('MONGO_URI', 'mongodb://admin:password@localhost:27017/')
+mongo_uri = os.getenv('MONGO_URI', 'mongodb://admin:password@host.docker.internal:27017/')
 mongo_client = MongoClient(mongo_uri)
 mongo_db = mongo_client['pokeapi_datawarehouse']
 
@@ -33,7 +35,8 @@ def connectPostgres():
 # Neo4j connection
 neo4j_auth = os.getenv('NEO4J_AUTH', 'neo4j/password')
 username, password = neo4j_auth.split('/')
-neo4j_driver = GraphDatabase.driver('bolt://localhost:7687', auth=(username, password))
+#neo4j_driver = Graph.driver('bolt://host.docker.internal:7687', auth=(username, password))
+
 
 
 
@@ -73,12 +76,20 @@ def query_postgres():
     else:
         return 'bad request!', 400
 
-@app.route('/neo4j', methods=['GET'])
+@app.route('/neo4jbuild', methods=['GET'])
 def get_data_from_neo4j():
-    with neo4j_driver.session() as session:
-        result = session.run('MATCH (n) RETURN n')
-        data = [record['n'] for record in result]
-    return jsonify(data)
+    graph = Graph('bolt://host.docker.internal:7687', auth=(username, password))
+    i = 1
+    with open("./all.cypher", "r") as f:
+        cypher_query = f.read().strip()
+        for line in cypher_query.split("\n"):
+            if line.find(":begin") >= 0:
+                pass
+            elif line.find(":commit") >= 0:
+                graph.commit()
+            else: 
+                graph.run(line)
+            i += 1
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

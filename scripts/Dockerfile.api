@@ -20,4 +20,4 @@ COPY . .
 ENV NAME World
 
 # Run flask_api.py when the container launches
-CMD ["python", "./main.py"]
+CMD ["python", "main.py"]

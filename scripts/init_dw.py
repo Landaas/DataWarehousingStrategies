@@ -20,8 +20,8 @@ async def main():
     print("Generating Dataset")
     generateDataset()
     tasks = [
-        asyncio.create_task(mongodb()),
         asyncio.create_task(postgres()),
+        asyncio.create_task(mongodb()),
     ]
 
     await asyncio.wait(tasks)

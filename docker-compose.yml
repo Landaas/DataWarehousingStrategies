@@ -45,13 +45,13 @@ services:
     ports:
       - 7474:7474
       - 7687:7687
-    volumes:
-      - ./neo4j:/data
     environment:
       NEO4J_AUTH: neo4j/password
+    volumes:
+      - ./scripts/all.cypher:/var/lib/neo4j/import/all.cypher
 
   python-app:
-    build: .
+    build: ./scripts/.
     restart: on-failure
     depends_on:
       - mongo
@@ -60,7 +60,7 @@ services:
 
   flask-api:
     build:
-      context: .
+      context: ./scripts/
       dockerfile: Dockerfile.api
     ports:
       - "5000:5000"
@@ -72,9 +72,12 @@ services:
     environment:
       - MONGO_URI=mongodb://admin:password@mongo:27017/
       - NEO4J_AUTH=neo4j/password
-    volumes:
-      - .:/usr/src/app
-    restart: always
+
+  front-end:
+    build: ./my-app/.
+    ports:
+      - 3000:3000
+  
 
 volumes:
   mongodb_data:

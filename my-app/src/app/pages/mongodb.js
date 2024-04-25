@@ -32,6 +32,9 @@ export default function Mongodb() {
     }
     return (
         <Stack spacing={2} display={"flex"} >
+          <Button href='http://localhost:8081/'>
+            WebUI
+          </Button>
           <Grid container flexDirection={"column"} alignItems={"flex-end"} justifyContent={"center"}>
             <Grid container component={Paper} mb={2} width={800}>
                 <Stack direction={"row"} display={"flex"} width={"100%"}>
