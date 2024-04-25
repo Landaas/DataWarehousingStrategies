@@ -46,12 +46,11 @@ def getPokemon():
 
         for pokemon in pokemon_entries:
             print(pokemon['name'])
-            info = fetch_pokemon_data(pokemon['url'], ['id', 'moves', 'stats', 'types'])
+            info = fetch_pokemon_data(pokemon['url'], ['id', 'stats', 'types'])
             if info:
                 pokemon.update({
                     'pokemon_id': info['id'],
                     'types': info['types'],
-                    'moves': [move for move in info['moves'] if move.get('version_group_details')],
                     **{f"base_{stat['stat']['name']}": stat['base_stat'] for stat in info['stats'] if stat['stat']['name'] in ['hp', 'attack', 'defense', 'speed']}
                 })
                 data_store.append(pokemon)
@@ -136,7 +135,7 @@ def getlocations():
 
 def read_csv_to_dict_list(file_path):
     # Define the keys for the dictionary
-    keys = ['Location', 'winner pokemon', 'losing pokemon', 'Winning move', 'Duration','Losing move', 'date']
+    keys = ['Location', 'winner pokemon', 'losing pokemon', 'Winning move','Losing move', 'Duration', 'date']
     data_list = []
     
     # Open the CSV file and read each line into a dictionary using the predefined keys
