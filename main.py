@@ -17,9 +17,10 @@ mongo_db = mongo_client['pokeapi_datawarehouse']
 
 # PostgreSQL connection
 postgres_conn = psycopg2.connect(
+    host="host.docker.internal",
     user='admin',
     password='password',
-    database='pokedw'
+    dbname='pokedw'
 )
 
 # Neo4j connection

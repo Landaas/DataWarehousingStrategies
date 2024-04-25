@@ -3,3 +3,4 @@ csv
 dataset.csv
 node_modules/
 neo4j
+mongodb_data/

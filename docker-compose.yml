@@ -10,7 +10,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - mongodb_data:/data/db
+      - ./mongodb_data:/data/db 
 
   mongo-express:
     image: mongo-express
@@ -44,7 +44,6 @@ services:
 
   python-app:
     build: .
-    restart: on-failure
     depends_on:
       - mongo
 

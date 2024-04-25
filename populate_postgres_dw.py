@@ -5,9 +5,10 @@ import psycopg2
 from ranges import ranges
 
 
-def connect_to_postgres(user, password, dbname):
+def connect_to_postgres(host, user, password, dbname):
     try:
         conn = psycopg2.connect(
+            host=host,
             user=user,
             password=password,
             dbname=dbname
@@ -102,14 +103,15 @@ def getlocations(conn):
     print("Added locations")
 
 
-def main():
+def loadPostgres():
     # PostgreSQL server details
     user = "admin"
     password = "password"
     dbname = "pokedw"
+    host="host.docker.internal"
 
     # Connect to PostgreSQL server
-    conn = connect_to_postgres(user, password, dbname)
+    conn = connect_to_postgres(host, user, password, dbname)
     if conn is None:
         return
     getPokemon(conn)
@@ -120,4 +122,4 @@ def main():
     conn.close()
 
 if __name__ == "__main__":
-    main()
+    loadPostgres()

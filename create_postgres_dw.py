@@ -2,9 +2,10 @@ import psycopg2
 from psycopg2 import sql
 
 # Function to connect to PostgreSQL server
-def connect_to_postgres(user, password, dbname):
+def connect_to_postgres(host, user, password, dbname):
     try:
         conn = psycopg2.connect(
+            host=host,
             user=user,
             password=password,
             dbname="postgres"
@@ -15,6 +16,7 @@ def connect_to_postgres(user, password, dbname):
         cur.execute("DROP DATABASE " + dbname + " WITH (force)")
         cur.execute("CREATE DATABASE " + dbname)
         conn = psycopg2.connect(
+            host=host,
             user=user,
             password=password,
             dbname=dbname
@@ -24,6 +26,7 @@ def connect_to_postgres(user, password, dbname):
         print(err)
         try:
             conn = psycopg2.connect(
+                host=host,
                 user=user,
                 password=password,
                 dbname="postgres"
@@ -32,6 +35,7 @@ def connect_to_postgres(user, password, dbname):
             cur = conn.cursor()
             cur.execute("CREATE DATABASE " + dbname)
             conn = psycopg2.connect(
+                host=host,
                 user=user,
                 password=password,
                 dbname=dbname
@@ -94,12 +98,13 @@ def create_tables(conn):
 # Main function
 def createPostgres():
     # PostgreSQL server details
+    host="host.docker.internal"
     user = "admin"
     password = "password"
     dbname = "pokedw"
 
     # Connect to PostgreSQL server
-    conn = connect_to_postgres(user, password, dbname)
+    conn = connect_to_postgres(host, user, password, dbname)
     if conn is None:
         return
 
@@ -108,7 +113,7 @@ def createPostgres():
 
     # Connect to the newly created database
     conn.close()  # Close the previous connection
-    conn = connect_to_postgres(user, password, dbname)
+    conn = connect_to_postgres(host, user, password, dbname)
 
     # Create a new table in the database
     create_tables(conn)
